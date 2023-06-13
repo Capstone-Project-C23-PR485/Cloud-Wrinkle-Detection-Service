@@ -16,7 +16,7 @@
    - 'gcr.io/capstone-skincheckai/wrinkle-detection-service'
    - '--port'
    - '8080'
-   - '--service-account=wrinkle-detection-service-account@capstone-skincheckai.iam.gserviceaccount.com'
+   - '--service-account=wrinkle-detection-service-acco@capstone-skincheckai.iam.gserviceaccount.com'
    - '--memory'
    - '1Gi'
 #    delete the line below if you want auth (using gcloud iap)
