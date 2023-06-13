@@ -1,20 +1,27 @@
-FROM python:3.11.3
+# use base from gcr.io/capstone-skincheckai/ml-base
+FROM gcr.io/capstone-skincheckai/ml-base
 
-WORKDIR /app
+# Allow statements and log messages to immediately appear in the logs
+ENV PYTHONUNBUFFERED True
 
-RUN pip install --upgrade pip
+# Copy local code to the container image.
+ENV APP_HOME /app
+WORKDIR $APP_HOME
 
-COPY requirements.txt requirements.txt
+# Download file model machine learning
+RUN curl -o model.h5 https://storage.googleapis.com/public-picture-media-bucket/ml_models/V7_model_mobilenetv2.h5
 
-RUN pip install -r requirements.txt
+COPY . ./
 
-COPY . .
+# Move the model file to the desired location
+RUN mkdir -p /app/models
+RUN mv model.h5 /app/models/model.h5
 
-EXPOSE 8080
+# Run the web service on container startup. Here we use the gunicorn
+# webserver, with one worker process and 8 threads.
+# For environments with multiple CPU cores, increase the number of workers
+# to be equal to the cores available.
+# Timeout is set to 0 to disable the timeouts of the workers to allow Cloud Run to handle instance scaling.
+# CMD ["python", "app.py"]
 
-# Set environment variables
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
-
-# Run the application
-CMD ["flask", "run"]
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8080", "app:app"]

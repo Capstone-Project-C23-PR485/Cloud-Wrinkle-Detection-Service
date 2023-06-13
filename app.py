@@ -1,25 +1,30 @@
-from flask import Flask, request
+# from flask import Flask, request
+import requests
 import json
 import base64
-# from Analysis import detect_wrinkle
+from keras.models import load_model
+import os
+# from Analysis import detect_acne
+from fastapi import FastAPI, HTTPException
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/', methods=['POST'])
-def index():
+
+@app.post('/')
+def index(request: dict):
     """ Receive and parse pubsub request"""
-    payload = request.get_json()
+    payload = request
 
     # check the pubsub request payload
     if not payload:
         msg = "no pubsub payload received"
         print(f"error: {msg}")
-        return f"Bad Request: {msg}", 400
+        raise HTTPException(400, detail=f"Bad Request:{msg}")
     
     if not isinstance(payload, dict):
         msg = "invalid payload format"
         print(f"error: {msg}")
-        return f"Bad Request: {msg}", 400
+        raise HTTPException(400, detail=f"Bad Request:{msg}")
     
     # decode pubsub message
     pubsub_message = payload["message"]
@@ -32,8 +37,8 @@ def index():
                 "Invalid Pub/Sub message: "
                 "data property is not valid base64 encoded JSON"
             )
-            print(f"error: {msg}")
-            return f"Bad Request: {msg}", 400
+            print(f"error: {e}")
+            raise HTTPException(400, detail=f"Bad Request:{e}")
         
         if not data["name"] or not data["bucket"]:
             msg = (
@@ -41,13 +46,19 @@ def index():
                 "expected name and bucket properties"
             )
             print(f"error: {msg}")
-            return f"Bad Request: {msg}", 400
+            raise HTTPException(400, detail=f"Bad Request:{msg}")
         
         try:
-            # detect_wrinkle(data)
+            model = load_model('models/model.h5')
+            print(f"DEBUG: {model}")
+            # detect_acne(data, model, 0.5)
             return ("", 204)
         except Exception as e:
-            print(f"error: {e}")
-            return ("", 500)
+            print(f"DEBUG: exception when trying to detect acne. Error message: {e}")
+            raise HTTPException(500, detail="")
         
-    return ("", 500)
+    raise HTTPException(500, detail="")
+
+@app.get('/')
+def example():
+    return "hello world"
