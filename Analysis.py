@@ -99,7 +99,7 @@ def post_request(file_name, confidence, result, file_path):
           "confidence": confidence, 
           "result": result
           },
-      "image": f"{gcs_bucket_url}/{file_name}",
+      "image": f"{gcs_bucket_url}/wrinkle/{file_name}",
       "model": "wrinkle"
     }
 
