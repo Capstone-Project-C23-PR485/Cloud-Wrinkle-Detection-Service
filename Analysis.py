@@ -83,7 +83,7 @@ def detect_wrinkle(data, model):
 def upload_to_gcs(bucket_name, image_result, file_name):
     # gcs_bucket_name = 'public-picture-media-bucket'
     image_result = cv2.imwrite(f'static/{file_name}', image_result)
-    destination_blob_name = f'images_result/{file_name}'
+    destination_blob_name = f'images_result/wrinkle-{file_name}'
     storage_client = storage.Client(os.getenv('PROJECT_ID'))
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
