@@ -1,3 +1,7 @@
 .venv
 __pycache__
 *.ipynb
+*.jpg
+*.png
+*.h5
+*.jpeg 
