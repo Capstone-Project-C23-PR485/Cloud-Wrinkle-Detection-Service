@@ -92,6 +92,7 @@ def upload_to_gcs(bucket_name, image_result, file_name):
 
 def post_request(file_name, confidence, result, file_path):
     gcs_bucket_url = f"{os.getenv('BUCKET_URL')}/images_result"
+    confidence = float(confidence)
     data = {
       "id": file_path,
       "data": {
